@@ -1,7 +1,8 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+
 dotenv.config();
-// Create a transporter using SMTP
+
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
@@ -12,20 +13,50 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Verify SMTP connection when server starts
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("SMTP Verify Error:", error);
+  } else {
+    console.log("SMTP Server Ready");
+  }
+});
+
 export const sendOtpMail = async (to, otp) => {
-  await transporter.sendMail({
-    from: process.env.SMTP_USER,
-    to,
-    subject: "Your OTP for Spicesprint",
-    text: `Your OTP for Spicesprint is: ${otp}`,
-  })
-}
+  try {
+    console.log("Before sendMail");
+
+    const info = await transporter.sendMail({
+      from: process.env.SMTP_USER,
+      to,
+      subject: "Your OTP for SpiceSprint",
+      text: `Your OTP for SpiceSprint is: ${otp}`,
+    });
+
+    console.log("After sendMail");
+    console.log("Message Sent:", info.messageId);
+
+    return true;
+  } catch (error) {
+    console.error("OTP Mail Error:", error);
+    throw error;
+  }
+};
 
 export const sendDelOtpMail = async (user, otp) => {
-  await transporter.sendMail({
-    from: process.env.SMTP_USER,
-    to:user.email,
-    subject: "Delivery Otp",
-    text: `Your OTP for Delivery is: ${otp}`,
-  })
-}
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.SMTP_USER,
+      to: user.email,
+      subject: "Delivery OTP",
+      text: `Your OTP for Delivery is: ${otp}`,
+    });
+
+    console.log("Delivery OTP Sent:", info.messageId);
+
+    return true;
+  } catch (error) {
+    console.error("Delivery OTP Error:", error);
+    throw error;
+  }
+};
