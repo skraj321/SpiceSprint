@@ -16,7 +16,6 @@ const useGetMyOrders = () => {
                 withCredentials: true
             });
             dispatch(setMyOrders(res.data.orders));
-            console.log(res.data)
         }catch(err){
             console.error("Error fetching current user:", err);
         }

@@ -2,12 +2,13 @@ import axios from 'axios'
 import React from 'react'
 import { useEffect } from 'react'
 import { serverUrl } from '../App'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setUserData } from '../redux/userSlice';
 import { setShopData } from '../redux/adminSlice';
 
 const useGetMyShop = () => {
     const dispatch=useDispatch();
+    const {userData} = useSelector((state)=>state.user)
   useEffect(() =>{
     const fetchShop = async() =>{
         try{
@@ -15,13 +16,12 @@ const useGetMyShop = () => {
                 withCredentials: true
             });
             dispatch(setShopData(res.data));
-            console.log(res.data)
         }catch(err){
             console.error("Error fetching current user:", err);
         }
     }
     fetchShop();
-  }, [])
+  }, [userData])
 }
 
 export default useGetMyShop

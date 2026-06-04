@@ -8,7 +8,7 @@ import { setShopData } from '../redux/adminSlice';
 
 const useGetShopByCity = () => {
     const dispatch=useDispatch();
-    const {currentCity} = useSelector((state)=>state.user)
+    const {currentCity,userData} = useSelector((state)=>state.user)
   useEffect(() =>{
     if(!currentCity) return;
     const fetchShops = async() =>{
@@ -17,13 +17,12 @@ const useGetShopByCity = () => {
                 withCredentials: true
             });
             dispatch(setShopsInMyCity(res.data));
-            console.log(res.data)
         }catch(err){
             console.error("Error fetching current user:", err);
         }
     }
     fetchShops();
-  }, [currentCity])
+  }, [currentCity,userData])
 }
 
 export default useGetShopByCity

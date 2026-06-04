@@ -33,7 +33,17 @@ const useGetCity = () => {
         dispatch(setState(result?.state));
         dispatch(setAddress(result?.address_line1));
         dispatch(setCurrAddress(result?.address_line2));
-      });
+      }
+     ,
+  (error) => {
+    console.log("Location Error:", error);
+  },
+  {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 0,
+  }
+);
     } catch (err) {
       console.error("Error fetching location:", err);
     }

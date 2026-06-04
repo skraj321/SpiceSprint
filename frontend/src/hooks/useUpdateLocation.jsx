@@ -16,7 +16,6 @@ const useUpdateLocation = () => {
       const res = await axios.post(`${serverUrl}/api/update-location`, { lat, long }, {
         withCredentials: true
       });
-      console.log("Location updated successfully:", res.data);
     } catch (err) {
       console.error("Error fetching location:", err);
     }
