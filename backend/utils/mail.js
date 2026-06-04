@@ -14,6 +14,9 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendOtpMail = async (to, otp) => {
+  console.log("SMTP_USER:", process.env.SMTP_USER);
+console.log("SMTP_PASS EXISTS:", !!process.env.SMTP_PASS);
+console.log("Before sendMail");
   try {
     const info = await transporter.sendMail({
       from: '"SpiceSprint" <spicesprintsaheb@gmail.com>',
@@ -26,7 +29,7 @@ export const sendOtpMail = async (to, otp) => {
         <p>This OTP is valid for 5 minutes.</p>
       `,
     });
-
+console.log("After sendMail");
     console.log("OTP Email Sent:", info.messageId);
   } catch (error) {
     console.error("Brevo Error:", error);
