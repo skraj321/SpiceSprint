@@ -1,60 +1,76 @@
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-  connectionTimeout: 10000, // 10 seconds timeout
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-});
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
 export const sendOtpMail = async (to, otp) => {
-  console.log("SMTP_USER:", process.env.SMTP_USER);
-console.log("SMTP_PASS EXISTS:", !!process.env.SMTP_PASS);
-console.log("Before sendMail");
+  console.log("Before sending via Brevo API");
+  
+  if (!process.env.BREVO_API_KEY) {
+    throw new Error("BREVO_API_KEY is missing in Render environment variables");
+  }
+
   try {
-    const info = await transporter.sendMail({
-      from: '"SpiceSprint" <spicesprintsaheb@gmail.com>',
-      to,
-      subject: "Your OTP for SpiceSprint",
-      html: `
-        <h2>SpiceSprint OTP Verification</h2>
-        <p>Your OTP is:</p>
-        <h1>${otp}</h1>
-        <p>This OTP is valid for 5 minutes.</p>
-      `,
+    const response = await fetch(BREVO_API_URL, {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": process.env.BREVO_API_KEY,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: { name: "SpiceSprint", email: "spicesprintsaheb@gmail.com" },
+        to: [{ email: to }],
+        subject: "Your OTP for SpiceSprint",
+        htmlContent: `
+          <h2>SpiceSprint OTP Verification</h2>
+          <p>Your OTP is:</p>
+          <h1>${otp}</h1>
+          <p>This OTP is valid for 5 minutes.</p>
+        `,
+      }),
     });
-console.log("After sendMail");
-    console.log("OTP Email Sent:", info.messageId);
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(`Brevo API Error: ${JSON.stringify(data)}`);
+    }
+
+    console.log("After sendMail. OTP Email Sent Successfully:", data.messageId || data);
   } catch (error) {
-    console.error("Brevo Error:", error);
+    console.error("Brevo API Connection Error:", error);
     throw error;
   }
 };
 
 export const sendDelOtpMail = async (user, otp) => {
   try {
-    const info = await transporter.sendMail({
-      from: '"SpiceSprint" <spicesprintsaheb@gmail.com>',
-      to: user.email,
-      subject: "Delivery OTP",
-      html: `
-        <h2>Delivery Verification</h2>
-        <h1>${otp}</h1>
-      `,
+    const response = await fetch(BREVO_API_URL, {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": process.env.BREVO_API_KEY,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: { name: "SpiceSprint", email: "spicesprintsaheb@gmail.com" },
+        to: [{ email: user.email }],
+        subject: "Delivery OTP",
+        htmlContent: `
+          <h2>Delivery Verification</h2>
+          <h1>${otp}</h1>
+        `,
+      }),
     });
 
-    console.log("Delivery OTP Sent:", info.messageId);
+    const data = await response.json();
+    if (!response.ok) throw new Error(JSON.stringify(data));
+    
+    console.log("Delivery OTP Sent Successfully:", data.messageId || data);
   } catch (error) {
-    console.error("Brevo Error:", error);
+    console.error("Brevo API Connection Error:", error);
     throw error;
-  }
+  }   
 };
