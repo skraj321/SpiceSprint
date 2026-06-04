@@ -1,9 +1,10 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+
 dotenv.config();
-// Create a transporter using SMTP
+
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "smtp-relay.brevo.com",
   port: 587,
   secure: false,
   auth: {
@@ -13,19 +14,41 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendOtpMail = async (to, otp) => {
-  await transporter.sendMail({
-    from: process.env.SMTP_USER,
-    to,
-    subject: "Your OTP for Spicesprint",
-    text: `Your OTP for Spicesprint is: ${otp}`,
-  })
-}
+  try {
+    const info = await transporter.sendMail({
+      from: '"SpiceSprint" <spicesprintsaheb@gmail.com>',
+      to,
+      subject: "Your OTP for SpiceSprint",
+      html: `
+        <h2>SpiceSprint OTP Verification</h2>
+        <p>Your OTP is:</p>
+        <h1>${otp}</h1>
+        <p>This OTP is valid for 5 minutes.</p>
+      `,
+    });
+
+    console.log("OTP Email Sent:", info.messageId);
+  } catch (error) {
+    console.error("Brevo Error:", error);
+    throw error;
+  }
+};
 
 export const sendDelOtpMail = async (user, otp) => {
-  await transporter.sendMail({
-    from: process.env.SMTP_USER,
-    to:user.email,
-    subject: "Delivery Otp",
-    text: `Your OTP for Delivery is: ${otp}`,
-  })
-}
+  try {
+    const info = await transporter.sendMail({
+      from: '"SpiceSprint" <spicesprintsaheb@gmail.com>',
+      to: user.email,
+      subject: "Delivery OTP",
+      html: `
+        <h2>Delivery Verification</h2>
+        <h1>${otp}</h1>
+      `,
+    });
+
+    console.log("Delivery OTP Sent:", info.messageId);
+  } catch (error) {
+    console.error("Brevo Error:", error);
+    throw error;
+  }
+};
