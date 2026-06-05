@@ -3,6 +3,9 @@ import link from "../assets/linkedin.png";
 import git from "../assets/github.png";
 import twit from "../assets/twitter.png";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { serverUrl } from "../App";
+import { toast } from "react-toastify";
 
 const Contact = () => {
   const { currentCity } = useSelector((state) => state.user);
@@ -28,18 +31,33 @@ const Contact = () => {
     return isValid;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async(event) => {
     event.preventDefault();
     if (!validateEmail()) {
       return;
     }
-    console.log(formData);
-    alert("Message sent!");
-    setFormData({
+    const {name,email,message}=formData;
+    try{
+      const res=await axios.post(`${serverUrl}/api/send-msg`,{
+        name,
+        email,
+        message
+      },{
+        withCredentials:true
+      })
+      toast.success("Your Message has been sent successfully.",{
+        className: "!mt-16 !bg-orange-50 !text-orange-600",
+              progressClassName: "!bg-orange-500",
+      })
+      setFormData({
       name: "",
       email: "",
       message: "",
     });
+    }catch(err){
+      console.log(err)
+    }
+    
   };
 
   return (

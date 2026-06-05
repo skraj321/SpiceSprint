@@ -1,4 +1,5 @@
 import User from "../models/User.js"
+import Contact from "../models/Contact.js";
 
 export const getCurrentUser = async (req,res)=>{
     try{
@@ -34,3 +35,25 @@ export const updateUserLocation = async(req,res) =>{
         return res.status(500).json({error: "Update Location Server Error"});
     }
 }
+
+export const sendContactMessage = async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
+    const contact = await Contact.create({
+      name,
+      email,
+      message,
+    });
+    res.status(200).json({
+      msg: "Contact Data Saved",
+      contact,
+    });
+  } catch (err) {
+    console.error("Contact Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
