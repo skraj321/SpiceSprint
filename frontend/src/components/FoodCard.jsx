@@ -85,6 +85,7 @@ const FoodCard = ({ food }) => {
 
           <div className="flex items-center border rounded-full overflow-hidden shadow-sm">
             <button
+              data-testid="decrease-quantity-btn"
               onClick={() => setQuantity((prev) => Math.max(prev - 1, 0))}
               className="px-2 py-1 hover:bg-gray-100"
             >
@@ -96,6 +97,7 @@ const FoodCard = ({ food }) => {
             </span>
 
             <button
+              data-testid="increase-quantity-btn"
               onClick={() => setQuantity((prev) => prev + 1)}
               className="px-2 py-1 hover:bg-gray-100"
             >
@@ -103,6 +105,7 @@ const FoodCard = ({ food }) => {
             </button>
 
             <button
+              data-testid="cart-icon-btn"
               onClick={addItemToCart}
               className={`${
                 cartItems.some((i) => i.id === food._id)
