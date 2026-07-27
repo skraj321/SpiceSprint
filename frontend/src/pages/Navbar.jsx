@@ -156,7 +156,7 @@ function Nav() {
         ) : (
           <>
             {userData.user?.role == "user" && (
-              <div
+              <div data-testid="open cart"
                 className="relative cursor-pointer"
                 onClick={() => navigate("/cart")}
               >
