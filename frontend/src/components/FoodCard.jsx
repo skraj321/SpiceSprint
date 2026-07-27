@@ -119,6 +119,7 @@ const FoodCard = ({ food }) => {
         </div>
 
         <button
+          data-testid="add-to-cart-btn"
           onClick={addItemToCart}
           className="mt-5 w-full py-3 bg-orange-500 text-white rounded-xl font-semibold hover:bg-black transition"
         >
